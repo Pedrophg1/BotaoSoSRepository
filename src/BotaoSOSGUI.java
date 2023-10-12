@@ -65,7 +65,7 @@ public class BotaoSOSGUI {
         botaoMapa.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    File imageFile = new File("assets/testeMapa.jpeg");
+                    File imageFile = new File("assets/mapa_ufs_sao_cristovao.png");
                     BufferedImage image = ImageIO.read(imageFile);
 
                     JFrame mapaFrame = new JFrame("Mapa da UFS");
