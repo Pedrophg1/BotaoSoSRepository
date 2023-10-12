@@ -1,10 +1,27 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 public class BotaoSOSGUI {
     private JFrame frame;
@@ -12,35 +29,70 @@ public class BotaoSOSGUI {
     public BotaoSOSGUI() {
         frame = new JFrame("Sistema de Ajuda da UFS");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(800, 350);
         frame.setLocationRelativeTo(null);
 
-        JPanel painelCentral = new JPanel();
-        painelCentral.setBackground(Color.WHITE);
-        frame.add(painelCentral, BorderLayout.CENTER);
+        JPanel painelSuperior = new JPanel();
+        painelSuperior.setLayout(new BorderLayout());
 
-        JPanel painelNorte = new JPanel();
-        painelNorte.setLayout(new BorderLayout());
+        ImageIcon logoIcone = new ImageIcon("assets/logo_ufs.png");
 
-        JLabel labelSelecione = new JLabel("Selecione abaixo o local do problema");
-        labelSelecione.setHorizontalAlignment(JLabel.CENTER);
-        painelNorte.add(labelSelecione, BorderLayout.NORTH);
+        Image logoImagem = logoIcone.getImage().getScaledInstance(130, 100, Image.SCALE_SMOOTH);
+        logoIcone = new ImageIcon(logoImagem);
+
+        JPanel painelLogo = new JPanel();
+        painelLogo.add(new JLabel(logoIcone));
+        painelLogo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        painelSuperior.add(painelLogo, BorderLayout.WEST);
+
+        JLabel tituloLabel = new JLabel("Sistema de SOS");
+        tituloLabel.setFont(new Font("Montserrat", Font.BOLD, 24));
+        tituloLabel.setBorder(BorderFactory.createEmptyBorder(0, 140, 0, 0));
+
+        painelSuperior.add(tituloLabel, BorderLayout.CENTER);
+
+        JLabel labelSelecioneLugar = new JLabel("Selecione abaixo o local do problema:");
+        labelSelecioneLugar.setFont(new Font("Montserrat", Font.BOLD, 14));
+        labelSelecioneLugar.setHorizontalAlignment(JLabel.CENTER);
+        painelSuperior.add(labelSelecioneLugar, BorderLayout.SOUTH);
+
+        frame.add(painelSuperior, BorderLayout.NORTH);
+
+        JPanel painelListaLugares = new JPanel();
+        String[] lugares = { "Entrada Principal", "Entrada de Automóveis", "Didática I", "Didática II", "Didática III",
+                "Didática IV", "Didática V", "Didática VI", "Didática VII", "Resun", "Biblioteca", "Auditório",
+                "Reitoria", "Laboratório" };
+        JComboBox<String> listaLugares = new JComboBox<>(lugares);
+        listaLugares.setPreferredSize(new Dimension(600, listaLugares.getPreferredSize().height));
+        painelListaLugares.add(listaLugares);
+        frame.add(painelListaLugares, BorderLayout.CENTER);
+
+        JPanel sosButtonPanel = new JPanel();
+        RedRoundButtonSOS botaoSOS = new RedRoundButtonSOS("SOS");
+        botaoSOS.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        botaoSOS.setEnabled(false);
+        sosButtonPanel.add(botaoSOS);
+        frame.add(sosButtonPanel, BorderLayout.SOUTH);
 
         JButton botaoAjuda = new JButton("Ajuda");
-        painelNorte.add(botaoAjuda, BorderLayout.WEST);
 
-        String[] lugares = { "Biblioteca", "Auditório", "Reitoria", "Laboratório" };
-        JComboBox<String> comboLugares = new JComboBox<>(lugares);
-        painelNorte.add(comboLugares, BorderLayout.CENTER);
+        JButton botaoVerMapa = new JButton("Ver Mapa");
 
-        frame.add(painelNorte, BorderLayout.NORTH);
+        JPanel botaoAjudaPanel = new JPanel();
+        botaoAjuda.setBackground(new Color(0, 58, 106));
+        botaoAjuda.setForeground(Color.WHITE);
+        botaoAjudaPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        botaoAjudaPanel.add(botaoVerMapa);
+        botaoAjudaPanel.add(botaoAjuda);
+        painelSuperior.add(botaoAjudaPanel, BorderLayout.EAST);
 
-        RedRoundButtonSOS botaoSOS = new RedRoundButtonSOS("SOS");
-        botaoSOS.setEnabled(false);
+        frame.add(painelSuperior, BorderLayout.NORTH);
+        frame.add(painelListaLugares, BorderLayout.CENTER);
+        frame.add(sosButtonPanel, BorderLayout.SOUTH);
 
-        comboLugares.addActionListener(new ActionListener() {
+        listaLugares.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                botaoSOS.setEnabled(comboLugares.getSelectedIndex() != -1);
+                botaoSOS.setEnabled(listaLugares.getSelectedIndex() != -1);
             }
         });
 
@@ -49,52 +101,13 @@ public class BotaoSOSGUI {
                 String matricula = JOptionPane.showInputDialog(frame, "Digite sua matrícula:");
 
                 if (isNumeric(matricula) && matricula.length() == 12) {
-                    String lugarProblema = (String) comboLugares.getSelectedItem();
+                    String lugarProblema = (String) listaLugares.getSelectedItem();
                     String descricaoProblema = JOptionPane.showInputDialog(frame,
                             "Descreva o problema em " + lugarProblema + ":");
                     JOptionPane.showMessageDialog(frame, "SOS enviado com sucesso!");
                 } else {
                     JOptionPane.showMessageDialog(frame,
                             "Matrícula inválida. Certifique-se de que seja uma matrícula válida.", "Erro",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        JButton botaoMapa = new JButton("Ver Mapa");
-        botaoMapa.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    File imageFile = new File("assets/mapa_ufs_sao_cristovao.png");
-                    BufferedImage image = ImageIO.read(imageFile);
-
-                    JFrame mapaFrame = new JFrame("Mapa da UFS");
-                    mapaFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                    mapaFrame.setSize(800, 600);
-                    mapaFrame.setLocationRelativeTo(null);
-
-                    JPanel mapaPanel = new JPanel() {
-                        @Override
-                        protected void paintComponent(Graphics g) {
-                            super.paintComponent(g);
-                            g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-                        }
-                    };
-
-                    JButton botaoVoltar = new JButton("Voltar");
-                    botaoVoltar.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            mapaFrame.dispose();
-                            frame.setVisible(true);
-                        }
-                    });
-
-                    mapaFrame.add(mapaPanel, BorderLayout.CENTER);
-                    mapaFrame.add(botaoVoltar, BorderLayout.SOUTH);
-                    mapaFrame.setVisible(true);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(frame, "Erro ao carregar a imagem do mapa.", "Erro",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -136,10 +149,43 @@ public class BotaoSOSGUI {
             }
         });
 
-        JPanel painelCentralBotoes = new JPanel();
-        painelCentralBotoes.add(botaoSOS);
-        painelCentralBotoes.add(botaoMapa);
-        frame.add(painelCentralBotoes, BorderLayout.CENTER);
+        botaoVerMapa.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    File imageFile = new File("assets/mapa_ufs_sao_cristovao.png");
+                    BufferedImage image = ImageIO.read(imageFile);
+
+                    JFrame mapaFrame = new JFrame("Mapa da UFS");
+                    mapaFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    mapaFrame.setSize(800, 600);
+                    mapaFrame.setLocationRelativeTo(null);
+
+                    JPanel mapaPanel = new JPanel() {
+                        @Override
+                        protected void paintComponent(Graphics g) {
+                            super.paintComponent(g);
+                            g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+                        }
+                    };
+
+                    JButton botaoVoltar = new JButton("Voltar");
+                    botaoVoltar.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            mapaFrame.dispose();
+                            frame.setVisible(true);
+                        }
+                    });
+
+                    mapaFrame.add(mapaPanel, BorderLayout.CENTER);
+                    mapaFrame.add(botaoVoltar, BorderLayout.SOUTH);
+                    mapaFrame.setVisible(true);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(frame, "Erro ao carregar a imagem do mapa.", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
         frame.setVisible(true);
     }
