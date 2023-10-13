@@ -29,7 +29,7 @@ public class BotaoSOSGUI {
     public BotaoSOSGUI() {
         frame = new JFrame("Sistema de Ajuda da UFS");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 350);
+        frame.setSize(600, 350);
         frame.setLocationRelativeTo(null);
 
         JPanel painelSuperior = new JPanel();
@@ -37,7 +37,7 @@ public class BotaoSOSGUI {
 
         ImageIcon logoIcone = new ImageIcon("assets/logo_ufs.png");
 
-        Image logoImagem = logoIcone.getImage().getScaledInstance(130, 100, Image.SCALE_SMOOTH);
+        Image logoImagem = logoIcone.getImage().getScaledInstance(100, 80, Image.SCALE_SMOOTH);
         logoIcone = new ImageIcon(logoImagem);
 
         JPanel painelLogo = new JPanel();
@@ -47,7 +47,7 @@ public class BotaoSOSGUI {
 
         JLabel tituloLabel = new JLabel("Sistema de SOS");
         tituloLabel.setFont(new Font("Montserrat", Font.BOLD, 24));
-        tituloLabel.setBorder(BorderFactory.createEmptyBorder(0, 140, 0, 0));
+        tituloLabel.setBorder(BorderFactory.createEmptyBorder(0, 65, 0, 0));
 
         painelSuperior.add(tituloLabel, BorderLayout.CENTER);
 
@@ -63,14 +63,16 @@ public class BotaoSOSGUI {
                 "Didática IV", "Didática V", "Didática VI", "Didática VII", "Resun", "Biblioteca", "Auditório",
                 "Reitoria", "Laboratório" };
         JComboBox<String> listaLugares = new JComboBox<>(lugares);
-        listaLugares.setPreferredSize(new Dimension(600, listaLugares.getPreferredSize().height));
+        listaLugares.setPreferredSize(new Dimension(400, listaLugares.getPreferredSize().height));
         painelListaLugares.add(listaLugares);
         frame.add(painelListaLugares, BorderLayout.CENTER);
 
         JPanel sosButtonPanel = new JPanel();
         RedRoundButtonSOS botaoSOS = new RedRoundButtonSOS("SOS");
+        botaoSOS.setFont(new Font("Montserrat", Font.BOLD, 24));
         botaoSOS.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         botaoSOS.setEnabled(false);
+        sosButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         sosButtonPanel.add(botaoSOS);
         frame.add(sosButtonPanel, BorderLayout.SOUTH);
 
@@ -168,16 +170,7 @@ public class BotaoSOSGUI {
                         }
                     };
 
-                    JButton botaoVoltar = new JButton("Voltar");
-                    botaoVoltar.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            mapaFrame.dispose();
-                            frame.setVisible(true);
-                        }
-                    });
-
                     mapaFrame.add(mapaPanel, BorderLayout.CENTER);
-                    mapaFrame.add(botaoVoltar, BorderLayout.SOUTH);
                     mapaFrame.setVisible(true);
                 } catch (IOException ex) {
                     ex.printStackTrace();
