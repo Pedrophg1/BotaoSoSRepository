@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +30,7 @@ public class BotaoSOSGUI {
     public BotaoSOSGUI() {
         frame = new JFrame("Sistema de SOS da UFS");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 350);
+        frame.setSize(600, 420);
         frame.setLocationRelativeTo(null);
 
         ImageIcon frameIcon = new ImageIcon("assets/brasao_icon.png");
@@ -68,7 +69,25 @@ public class BotaoSOSGUI {
         JComboBox<String> listaLugares = new JComboBox<>(lugares);
         listaLugares.setPreferredSize(new Dimension(400, listaLugares.getPreferredSize().height));
         painelListaLugares.add(listaLugares);
-        frame.add(painelListaLugares, BorderLayout.CENTER);
+
+        JPanel painelListaOcorrencias = new JPanel(new GridLayout(2, 1));
+        JLabel labelSelecionarOcorrencia = new JLabel("Selecione abaixo o tipo de ocorrência:");
+        labelSelecionarOcorrencia.setFont(new Font("Montserrat", Font.BOLD, 14));
+        labelSelecionarOcorrencia.setHorizontalAlignment(JLabel.CENTER);
+        painelListaOcorrencias.add(labelSelecionarOcorrencia, BorderLayout.NORTH);
+
+        String[] ocorrencias = { "Ocorrência 1", "Ocorrência 2", "Ocorrência 3", "Ocorrência 4", "Ocorrência 5" };
+        JComboBox<String> listaOcorrencias = new JComboBox<>(ocorrencias);
+        listaOcorrencias.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        listaOcorrencias.setPreferredSize(new Dimension(400, listaOcorrencias.getPreferredSize().height));
+        painelListaOcorrencias.add(listaOcorrencias);
+
+        JPanel painelListas = new JPanel();
+
+        painelListas.add(painelListaLugares);
+        painelListas.add(painelListaOcorrencias);
+
+        frame.add(painelListas);
 
         JPanel sosButtonPanel = new JPanel();
         RedRoundButtonSOS botaoSOS = new RedRoundButtonSOS("SOS");
@@ -77,6 +96,7 @@ public class BotaoSOSGUI {
         botaoSOS.setEnabled(false);
         sosButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         sosButtonPanel.add(botaoSOS);
+
         frame.add(sosButtonPanel, BorderLayout.SOUTH);
 
         JButton botaoAjuda = new JButton("Ajuda");
@@ -91,19 +111,27 @@ public class BotaoSOSGUI {
         botaoAjudaPanel.add(botaoAjuda);
         painelSuperior.add(botaoAjudaPanel, BorderLayout.EAST);
 
-        frame.add(painelSuperior, BorderLayout.NORTH);
-        frame.add(painelListaLugares, BorderLayout.CENTER);
-        frame.add(sosButtonPanel, BorderLayout.SOUTH);
-
         listaLugares.setSelectedItem(null);
+        listaOcorrencias.setSelectedItem(null);
 
+        listaOcorrencias.setEnabled(false);
         listaLugares.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                botaoSOS.setEnabled(listaLugares.getSelectedItem() != null);
+                if (listaLugares.getSelectedItem() != null) {
+                    listaOcorrencias.setEnabled(true);
+                } else {
+                    listaOcorrencias.setEnabled(false);
+                    botaoSOS.setEnabled(false);
+                }
             }
         });
 
-        // Inside the botaoSOS ActionListener
+        listaOcorrencias.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                botaoSOS.setEnabled(listaOcorrencias.getSelectedItem() != null);
+            }
+        });
+
         botaoSOS.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String matricula = JOptionPane.showInputDialog(frame, "Digite sua matrícula:");
@@ -111,7 +139,6 @@ public class BotaoSOSGUI {
                 if (isNumeric(matricula) && matricula.length() == 12) {
                     String lugarProblema = (String) listaLugares.getSelectedItem();
 
-                    // Create a JTextArea for problem description
                     JTextArea descricaoProblemaTextArea = new JTextArea();
                     descricaoProblemaTextArea.setWrapStyleWord(true);
                     descricaoProblemaTextArea.setLineWrap(true);
@@ -140,7 +167,7 @@ public class BotaoSOSGUI {
             public void actionPerformed(ActionEvent e) {
                 JFrame ajudaFrame = new JFrame("Ajuda");
                 ajudaFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                ajudaFrame.setSize(500, 420);
+                ajudaFrame.setSize(500, 430);
                 ajudaFrame.setLocationRelativeTo(null);
                 ImageIcon frameIcon = new ImageIcon("assets/brasao_icon.png");
                 ajudaFrame.setIconImage(frameIcon.getImage());
@@ -155,7 +182,7 @@ public class BotaoSOSGUI {
                 textoAjuda.setText("Bem-vindo(a) ao Sistema de SOS da UFS!\n\n"
                         + "Este sistema permite que você solicite ajuda em locais específicos da universidade.\n\n"
                         + "Para solicitar ajuda:\n"
-                        + "1. Selecione o local do problema no menu suspenso.\n"
+                        + "1. Selecione o local do problema e o tipo de ocorrência nos menus suspensos.\n"
                         + "2. Preencha o campo com sua matrícula e em seguida preencha o próximo campo descrevendo o problema.\n"
                         + "3. Clique no botão 'SOS' para enviar sua solicitação de ajuda.\n\n"
                         + "Sua solicitação será enviada para o(a) segurança mais próximo de você, basta aguardar.\n\n"
@@ -172,12 +199,12 @@ public class BotaoSOSGUI {
         botaoVerMapa.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    File imageFile = new File("assets/mapa_ufs_sao_cristovao.png");
+                    File imageFile = new File("assets/mapa_ufs.png");
                     BufferedImage image = ImageIO.read(imageFile);
 
                     JFrame mapaFrame = new JFrame("Mapa da UFS");
                     mapaFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                    mapaFrame.setSize(800, 550);
+                    mapaFrame.setSize(600, 800);
                     mapaFrame.setLocationRelativeTo(null);
                     ImageIcon frameIcon = new ImageIcon("assets/brasao_icon.png");
                     mapaFrame.setIconImage(frameIcon.getImage());
